@@ -1,6 +1,6 @@
 /**
- * Возвращает строку timestamp в формате YYYY-MM-DD HH:mm:ss.
- * Используется для всех типов логов.
+ * Returns timestamp string in "YYYY-MM-DD HH:mm:ss" format.
+ * Used for logging and backup file naming.
  */
 
 module.exports = function timestamp() {

@@ -1,8 +1,9 @@
 /**
- * Утилита для преобразования относительных путей в абсолютные.
- * Используется для корректного поиска файлов независимо от директории запуска.
+ * Converts a relative path into an absolute path based on
+ * the application's current working directory.
+ * Ensures consistent file lookup regardless of where the app is started.
  *
- * @param {string} relativePath — относительный путь
+ * @param {string} relativePath
  */
 
 const path = require("path");
