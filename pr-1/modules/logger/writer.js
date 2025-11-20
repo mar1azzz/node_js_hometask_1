@@ -1,6 +1,6 @@
 /**
- * Небольшая обёртка над console.log.
- * Изолирует вывод, чтобы логи можно было перенаправить при необходимости.
+ * A small wrapper around console.log.
+ * Isolates the output so logs can be redirected if needed.
  */
 
 module.exports.write = function (message) {

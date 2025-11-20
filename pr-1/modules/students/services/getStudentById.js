@@ -2,7 +2,7 @@
  * Service: find a student by ID.
  * @param {StudentRepository} repo
  * @param {Logger} logger
- * @param {string} id — ID студента
+ * @param {string} id
  *
  * @returns {Student|null}
  */

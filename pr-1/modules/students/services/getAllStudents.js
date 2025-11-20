@@ -3,7 +3,7 @@
  * @param {StudentRepository} repo
  * @param {Logger} logger
  *
- * @returns {Student[]} список всех студентов
+ * @returns {Student[]}
  */
 
 const events = require("../../events/AppEvents");

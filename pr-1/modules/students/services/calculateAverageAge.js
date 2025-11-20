@@ -1,10 +1,10 @@
 /**
  * Service: calculate mean age of all students.
  *
- * @param {StudentRepository} repo — хранилище
- * @param {Logger} logger — логгер
+ * @param {StudentRepository} repo
+ * @param {Logger} logger
  *
- * @returns {number} средний возраст
+ * @returns {number} average age
  */
 
 const events = require("../../events/AppEvents");

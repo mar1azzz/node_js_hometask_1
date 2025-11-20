@@ -1,11 +1,11 @@
 /**
  * Service: create a new student in the repository.
  *
- * @param {StudentRepository} repo — хранилище студентов
- * @param {Logger} logger — логгер
- * @param {string} name — имя студента
- * @param {number} age — возраст
- * @param {string|number} group — группа
+ * @param {StudentRepository} repo
+ * @param {Logger} logger
+ * @param {string} name
+ * @param {number} age
+ * @param {string|number} group
  *
  * @returns {Promise<Student>} created student
  */

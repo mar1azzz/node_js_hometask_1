@@ -3,9 +3,9 @@
  *
  * @param {StudentRepository} repo
  * @param {Logger} logger
- * @param {string} id — идентификатор студента
+ * @param {string} id
  *
- * @returns {boolean} true если студент удалён, иначе false
+ * @returns {boolean} true if student is removed, else false
  */
 const events = require("../../events/AppEvents");
 
