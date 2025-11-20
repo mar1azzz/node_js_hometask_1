@@ -1,5 +1,6 @@
 /**
- * Индексный модуль, объединяющий все сервисы для удобного импорта.
+ * Service index for convenient aggregated import.
+ * Exposes all student-related operations.
  */
 
 module.exports = {
