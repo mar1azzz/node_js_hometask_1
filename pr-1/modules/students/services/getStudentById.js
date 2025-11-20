@@ -1,6 +1,5 @@
 /**
- * Сервис: ищет студента по ID.
- *
+ * Service: find a student by ID.
  * @param {StudentRepository} repo
  * @param {Logger} logger
  * @param {string} id — ID студента
@@ -8,8 +7,11 @@
  * @returns {Student|null}
  */
 
-module.exports = function getStudentById(repo, logger, id) {
+const events = require("../../events/AppEvents");
+
+module.exports = async function getStudentById(repo, logger, id) {
   const student = repo.findById(id);
   logger.log("Student:", student);
+  events.emit("student:requested", { id, found: !!student });
   return student;
 };
