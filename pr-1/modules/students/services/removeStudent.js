@@ -1,5 +1,5 @@
 /**
- * Сервис: удаляет студента по ID.
+ * Service: delete a student by ID.
  *
  * @param {StudentRepository} repo
  * @param {Logger} logger
@@ -7,9 +7,11 @@
  *
  * @returns {boolean} true если студент удалён, иначе false
  */
+const events = require("../../events/AppEvents");
 
-module.exports = function removeStudent(repo, logger, id) {
+module.exports = async function removeStudent(repo, logger, id) {
   const removed = repo.delete(id);
   logger.log(removed ? `Student ${id} removed` : `Student ${id} not found`);
+  events.emit("student:removed", { id, removed });
   return removed;
 };
