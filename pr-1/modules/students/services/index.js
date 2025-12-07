@@ -10,4 +10,5 @@ module.exports = {
   getStudentsByGroup: require("./getStudentsByGroup"),
   getAllStudents: require("./getAllStudents"),
   calculateAverageAge: require("./calculateAverageAge"),
+  updateStudent: require("./updateStudent"),
 };

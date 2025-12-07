@@ -106,20 +106,19 @@ module.exports = function createStudentsController({ repo, services, logger }) {
     updateById: async (req, res, next) => {
       try {
         const { id } = req.params;
-        const existing = repo.findById(id);
 
-        if (!existing) {
+        const updated = await services.updateStudent(
+          repo,
+          logger,
+          id,
+          req.body || {}
+        );
+
+        if (!updated) {
           return res.status(404).json({ error: "Student not found" });
         }
 
-        const { name, age, group } = req.body || {};
-
-        if (name !== undefined) existing.name = name;
-        if (age !== undefined) existing.age = age;
-        if (group !== undefined) existing.group = group;
-
-        logger.log("Student updated via PATCH", { id, updated: existing });
-        res.status(200).json(existing);
+        res.status(200).json(updated);
       } catch (err) {
         next(err);
       }
