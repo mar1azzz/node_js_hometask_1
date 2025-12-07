@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/mar1azzz/node_js_hometask_1#readme",
   "dependencies": {
+    "@tabler/icons-react": "^3.35.0",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "swagger-ui-express": "^5.0.1"

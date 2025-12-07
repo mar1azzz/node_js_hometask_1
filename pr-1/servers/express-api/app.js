@@ -10,18 +10,29 @@ const swaggerDoc = require("./swagger");
 module.exports = function createApp({ studentsRouter, backupRouter, logger }) {
   const app = express();
 
+  //CORS for front
+  app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "http://localhost:5173");
+    res.header(
+      "Access-Control-Allow-Methods",
+      "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+    );
+    res.header("Access-Control-Allow-Headers", "Content-Type");
+
+    if (req.method === "OPTIONS") {
+      return res.sendStatus(200);
+    }
+    next();
+  });
   app.use(express.json());
 
   // Swagger UI
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
-
   app.use("/api/students", studentsRouter);
   app.use("/api/backup", backupRouter);
-
   app.get("/ping", (req, res) => {
     res.json({ ok: true, message: "Students API is alive" });
   });
-
   app.use((req, res) => {
     res.status(404).json({ error: "Not Found" });
   });
