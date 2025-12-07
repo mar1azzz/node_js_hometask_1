@@ -39,7 +39,7 @@ class StudentRepository {
     }
 
     this.students = rawData.map(
-      (s) => new Student(s.id, s.name, s.age, s.group)
+      (s) => new Student(s.id, s.name, Number(s.age), String(s.group))
     );
   }
 
@@ -57,7 +57,12 @@ class StudentRepository {
    * Creates and stores a new student object.
    */
   create(name, age, group) {
-    const newStudent = new Student(generateId(), name, age, group);
+    const newStudent = new Student(
+      String(generateId()),
+      String(name),
+      Number(age),
+      String(group)
+    );
     this.students.push(newStudent);
     return newStudent;
   }
