@@ -17,6 +17,7 @@ import CuteCatHeader from "../components/CuteCatHeader";
 import StudentForm from "../components/StudentForm";
 import StudentsTable from "../components/StudentsTable";
 import BackupControls from "../components/BackupControls";
+import BackupReportModal from "../components/BackupReportModal";
 
 import {
   getAllStudents,
@@ -56,6 +57,9 @@ export default function StudentsPage() {
 
   const [backupStatus, setBackupStatus] = useState<BackupStatus | null>(null);
   const [backupReport, setBackupReport] = useState<BackupReport | null>(null);
+  const [reportModalOpened, setReportModalOpened] = useState(false);
+
+
 
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
 
@@ -204,11 +208,14 @@ export default function StudentsPage() {
     try {
       const report = await getBackupReport();
       setBackupReport(report);
+      setReportModalOpened(true);
       showSuccess("Backup report loaded");
     } catch (err) {
       showError(extractErrorMessage(err));
     }
   }
+
+
 
   return (
     <>
@@ -319,6 +326,13 @@ export default function StudentsPage() {
           </Text>
         </>
       )}
+
+      <BackupReportModal
+        opened={reportModalOpened}
+        onClose={() => setReportModalOpened(false)}
+        report={backupReport}
+      />
+
     </>
   );
 }

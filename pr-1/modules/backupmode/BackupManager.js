@@ -17,7 +17,7 @@ const path = require("path");
 const { resolvePath } = require("../common/utils/pathResolver");
 const { writeJSON } = require("../common/utils/file");
 const events = require("../events/AppEvents");
-const timestamp = require("../logger/formatters/utils/timestamp"); // ты уже это писал
+const timestamp = require("../logger/formatters/utils/timestamp");
 
 class BackupManager {
   /**

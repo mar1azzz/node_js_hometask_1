@@ -16,6 +16,7 @@ export default function BackupControls({
   onStart,
   onStop,
   onRefreshStatus,
+  onShowReport,
 }: BackupControlsProps) {
   const running = status?.running ?? false;
 
@@ -54,6 +55,14 @@ export default function BackupControls({
           </Button>
           <Button size="xs" variant="subtle" onClick={onRefreshStatus}>
             Refresh status
+          </Button>
+          <Button
+            size="xs"
+            variant="outline"
+            color="bluecat.6"
+            onClick={onShowReport}
+          >
+            Show report
           </Button>
         </Group>
 

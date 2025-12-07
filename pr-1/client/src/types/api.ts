@@ -21,5 +21,16 @@ export interface BackupStatus {
 
 export interface BackupReport {
   filesCount: number;
+
+  latestBackup: {
+    fileName: string;
+    createdAt: string | null;
+  } | null;
+
+  studentsById: Array<{
+    id: string;
+    amount: number;
+  }>;
+
   averageStudents: number;
 }
