@@ -1,6 +1,6 @@
 /**
- * Генератор уникальных ID для студентов.
- * Возвращает строку на основе текущего timestamp.
+ * Generates a unique string-based ID using current timestamp.
+ * Used as a simple unique identifier for new students.
  */
 
 module.exports.generateId = function () {
