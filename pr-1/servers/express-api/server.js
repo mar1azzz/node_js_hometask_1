@@ -13,6 +13,7 @@
 
 const createApp = require("./app");
 const bootstrap = require("./bootstrap");
+require("dotenv").config();
 
 const createStudentsController = require("./controllers/studentsController");
 const createBackupController = require("./controllers/backupController");
@@ -38,7 +39,7 @@ const printRoutes = require("./utils/printRoutes");
 
   const app = createApp({ studentsRouter, backupRouter, logger });
 
-  const PORT = 3000;
+  const PORT = process.env.EXPRESS_PORT || 3000;
   app.listen(PORT, () => {
     logger.log(`Express API server listening on http://localhost:${PORT}`);
     printRoutes();

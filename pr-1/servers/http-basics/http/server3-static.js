@@ -10,6 +10,9 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+require("dotenv").config();
+
+const PORT = process.env.HTTP3_PORT || 3103;
 
 const publicDir = path.join(__dirname, "public");
 
@@ -50,6 +53,6 @@ const server = http.createServer((req, res) => {
   res.end("Not Found");
 });
 
-server.listen(3000, () => {
-  console.log("Static server running at http://localhost:3000/");
+server.listen(PORT, () => {
+  console.log(`Static server running at http://localhost:${PORT}`);
 });

@@ -10,6 +10,9 @@
  */
 
 const http = require("http");
+require("dotenv").config();
+
+const PORT = process.env.HTTP2_PORT || 3102;
 
 const server = http.createServer((req, res) => {
   const details = `
@@ -25,6 +28,6 @@ const server = http.createServer((req, res) => {
   res.end(details);
 });
 
-server.listen(3000, () => {
-  console.log("Server running at http://localhost:3000/");
+server.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
 });
