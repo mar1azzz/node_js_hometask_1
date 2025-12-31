@@ -1,3 +1,11 @@
+/**
+ * Database migration runner.
+ *
+ * Uses Umzug to execute all pending database migrations.
+ * Allows initializing and updating PostgreSQL schema
+ * with a single CLI command (npm run db:migrate).
+ */
+
 require("dotenv").config();
 
 const { Umzug, SequelizeStorage } = require("umzug");

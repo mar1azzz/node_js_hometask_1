@@ -1,3 +1,12 @@
+/**
+ * Database migration: create students table.
+ *
+ * Creates the "students" table with required fields,
+ * timestamps, and indexes to match application data model.
+ * This migration allows any user to initialize
+ * the database structure with a single command.
+ */
+
 module.exports = {
   async up({ context: queryInterface }) {
     await queryInterface.createTable("students", {

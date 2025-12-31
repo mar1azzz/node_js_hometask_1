@@ -1,3 +1,12 @@
+/**
+ * Students request validation middlewares.
+ *
+ * Provides express-validator rules for validating
+ * request body and route parameters related to students.
+ * Ensures that only valid and well-formed data
+ * reaches controllers and database layer.
+ */
+
 const { body, param } = require("express-validator");
 
 const validateCreateStudent = [

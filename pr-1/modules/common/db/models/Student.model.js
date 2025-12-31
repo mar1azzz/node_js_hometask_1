@@ -1,3 +1,11 @@
+/**
+ * Sequelize Student model definition.
+ *
+ * Describes the structure of the "students" table
+ * and maps database columns to a Sequelize model.
+ * Used internally by PostgreSQL repository layer.
+ */
+
 const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize) =>

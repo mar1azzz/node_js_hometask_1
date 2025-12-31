@@ -1,3 +1,11 @@
+/**
+ * Sequelize database connection configuration.
+ *
+ * Initializes PostgreSQL connection using environment variables
+ * and provides a helper function to verify database availability
+ * during application startup.
+ */
+
 const { Sequelize } = require("sequelize");
 
 const { DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD } = process.env;
