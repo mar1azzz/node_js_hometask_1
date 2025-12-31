@@ -133,26 +133,6 @@ module.exports = {
       },
     },
 
-    "/api/students/save": {
-      post: {
-        summary: "Save students to file",
-        tags: ["Students"],
-        responses: {
-          200: { description: "Saved" },
-        },
-      },
-    },
-
-    "/api/students/load": {
-      post: {
-        summary: "Load students from file",
-        tags: ["Students"],
-        responses: {
-          200: { description: "Loaded" },
-        },
-      },
-    },
-
     // -------------------------
     // BACKUP ENDPOINTS
     // -------------------------
