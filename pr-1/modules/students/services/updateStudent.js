@@ -12,24 +12,19 @@
 const events = require("../../events/AppEvents");
 
 module.exports = async function updateStudent(repo, logger, id, updates) {
-  const student = repo.findById(id);
-  if (!student) {
+  const updated = await repo.update(id, updates);
+
+  if (!updated) {
     logger.log(`Student ${id} not found for update.`);
     return null;
   }
 
-  const { name, age, group } = updates;
-
-  if (name !== undefined) student.name = String(name);
-  if (age !== undefined) student.age = Number(age);
-  if (group !== undefined) student.group = String(group);
-
-  logger.log("Student updated:", student);
+  logger.log("Student updated:", updated);
 
   events.emit("student:updated", {
-    id: student.id,
-    updated: student,
+    id: updated.id,
+    updated,
   });
 
-  return student;
+  return updated;
 };
