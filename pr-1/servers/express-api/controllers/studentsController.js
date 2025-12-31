@@ -32,13 +32,6 @@ module.exports = function createStudentsController({ repo, services, logger }) {
     create: async (req, res, next) => {
       try {
         const { name, age, group } = req.body || {};
-
-        if (!name || typeof age !== "number" || !group) {
-          return res.status(400).json({
-            error: "Invalid body. Expected { name, age:number, group }",
-          });
-        }
-
         const student = await services.addStudent(
           repo,
           logger,
@@ -60,21 +53,13 @@ module.exports = function createStudentsController({ repo, services, logger }) {
     replaceCollection: async (req, res, next) => {
       try {
         const incoming = req.body;
+        const count = await repo.replaceAll(incoming);
 
-        if (!Array.isArray(incoming)) {
-          return res
-            .status(400)
-            .json({ error: "Body must be an array of student objects." });
-        }
-
-        // Simple replacement: accept raw objects,
-        // repository will treat them as plain data in memory.
-        repo.students = incoming;
         logger.log("Students collection replaced via PUT /api/students", {
-          count: incoming.length,
+          count,
         });
 
-        res.status(200).json({ replaced: true, count: incoming.length });
+        res.status(200).json({ replaced: true, count });
       } catch (err) {
         next(err);
       }
@@ -86,8 +71,11 @@ module.exports = function createStudentsController({ repo, services, logger }) {
      */
     getById: async (req, res, next) => {
       try {
-        const { id } = req.params;
-        const student = await services.getStudentById(repo, logger, id);
+        const student = await services.getStudentById(
+          repo,
+          logger,
+          req.params.id
+        );
 
         if (!student) {
           return res.status(404).json({ error: "Student not found" });
@@ -105,12 +93,10 @@ module.exports = function createStudentsController({ repo, services, logger }) {
      */
     updateById: async (req, res, next) => {
       try {
-        const { id } = req.params;
-
         const updated = await services.updateStudent(
           repo,
           logger,
-          id,
+          req.params.id,
           req.body || {}
         );
 
@@ -130,14 +116,17 @@ module.exports = function createStudentsController({ repo, services, logger }) {
      */
     removeById: async (req, res, next) => {
       try {
-        const { id } = req.params;
-        const removed = await services.removeStudent(repo, logger, id);
+        const removed = await services.removeStudent(
+          repo,
+          logger,
+          req.params.id
+        );
 
         if (!removed) {
           return res.status(404).json({ error: "Student not found" });
         }
 
-        res.status(200).json({ removed: true, id });
+        res.status(200).json({ removed: true, id: req.params.id });
       } catch (err) {
         next(err);
       }
@@ -149,13 +138,11 @@ module.exports = function createStudentsController({ repo, services, logger }) {
      */
     getByGroup: async (req, res, next) => {
       try {
-        const groupId = req.params.id;
         const students = await services.getStudentsByGroup(
           repo,
           logger,
-          groupId
+          req.params.id
         );
-
         res.status(200).json(students);
       } catch (err) {
         next(err);
@@ -170,32 +157,6 @@ module.exports = function createStudentsController({ repo, services, logger }) {
       try {
         const avg = await services.calculateAverageAge(repo, logger);
         res.status(200).json({ averageAge: avg });
-      } catch (err) {
-        next(err);
-      }
-    },
-
-    /**
-     * POST /api/students/save
-     * Persists current students collection to JSON file.
-     */
-    saveToFile: async (req, res, next) => {
-      try {
-        await repo.saveToFile("modules/testdata/students.json");
-        res.status(200).json({ saved: true });
-      } catch (err) {
-        next(err);
-      }
-    },
-
-    /**
-     * POST /api/students/load
-     * Reloads students collection from JSON file.
-     */
-    loadFromFile: async (req, res, next) => {
-      try {
-        await repo.loadFromFile("modules/testdata/students.json");
-        res.status(200).json({ loaded: true });
       } catch (err) {
         next(err);
       }

@@ -6,27 +6,55 @@
  */
 
 const express = require("express");
+const {
+  validateCreateStudent,
+  validateUpdateStudent,
+  validateReplaceCollection,
+  validateIdParam,
+  validateGroupParam,
+} = require("../middlewares/validators/studentsValidators");
+
+const { validationResult } = require("express-validator");
+
+function withValidation(handler) {
+  return (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: errors.array() });
+    }
+    return handler(req, res, next);
+  };
+}
 
 module.exports = function createStudentsRouter(controller) {
   const router = express.Router();
 
   // /api/students
   router.get("/", controller.getAll);
-  router.post("/", controller.create);
-  router.put("/", controller.replaceCollection);
+  router.post("/", validateCreateStudent, withValidation(controller.create));
+  router.put(
+    "/",
+    validateReplaceCollection,
+    withValidation(controller.replaceCollection)
+  );
 
   // Specific sub-routes should go BEFORE "/:id"
-  router.get("/group/:id", controller.getByGroup);
+  router.get(
+    "/group/:id",
+    validateGroupParam,
+    withValidation(controller.getByGroup)
+  );
   router.get("/average-age", controller.getAverageAge);
 
   // /api/students/:id
-  router.get("/:id", controller.getById);
-  router.patch("/:id", controller.updateById);
-  router.delete("/:id", controller.removeById);
-
-  // file operations
-  router.post("/save", controller.saveToFile);
-  router.post("/load", controller.loadFromFile);
+  router.get("/:id", validateIdParam, withValidation(controller.getById));
+  router.patch(
+    "/:id",
+    validateIdParam,
+    validateUpdateStudent,
+    withValidation(controller.updateById)
+  );
+  router.delete("/:id", validateIdParam, withValidation(controller.removeById));
 
   return router;
 };
