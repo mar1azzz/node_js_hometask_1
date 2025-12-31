@@ -1,5 +1,5 @@
 /**
- * Сервис: получает студентов по номеру группы.
+ * Service: return students filtered by group number.
  *
  * @param {StudentRepository} repo
  * @param {Logger} logger
@@ -7,9 +7,15 @@
  *
  * @returns {Student[]}
  */
+const events = require("../../events/AppEvents");
 
-module.exports = function getStudentsByGroup(repo, logger, group) {
-  const list = repo.findByGroup(group);
+module.exports = async function getStudentsByGroup(repo, logger, group) {
+  const normalized = String(group).trim();
+  const list = repo.findByGroup(normalized);
   logger.log(`Group ${group}:`, list);
+  events.emit("students:groupRequested", {
+    group,
+    count: list.length,
+  });
   return list;
 };

@@ -1,10 +1,11 @@
 /**
- * Форматирует простой лог (INFO).
+ * Produces a simple INFO log line.
+ * Format: [timestamp] INFO message {data}
  *
- * @param {string} message — текст сообщения
- * @param {Array<any>} args — дополнительные данные
+ * @param {string} message
+ * @param {Array<any>} args
  *
- * @returns {string} строка для вывода в лог
+ * @returns {string}
  */
 
 const timestamp = require("./utils/timestamp");
