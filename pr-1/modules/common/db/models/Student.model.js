@@ -32,6 +32,11 @@ module.exports = (sequelize) =>
         type: DataTypes.STRING,
         allowNull: false,
       },
+      userId: {
+        field: "user_id",
+        type: DataTypes.STRING(36),
+        allowNull: true,
+      },
     },
     {
       tableName: "students",
