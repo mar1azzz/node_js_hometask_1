@@ -19,7 +19,80 @@ module.exports = {
     },
   ],
 
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+      },
+    },
+  },
+  security: [{ bearerAuth: [] }],
+
   paths: {
+    // -------------------------
+    // AUTH
+    // -------------------------
+    "/api/auth/register": {
+      post: {
+        summary: "Register new user",
+        tags: ["Auth"],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["name", "surname", "email", "password"],
+                properties: {
+                  name: { type: "string" },
+                  surname: { type: "string" },
+                  email: { type: "string" },
+                  password: { type: "string", minLength: 6 },
+                  roleName: {
+                    type: "string",
+                    description: "Optional. For testing/admin use.",
+                  },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          201: { description: "User registered" },
+          400: { description: "Validation error" },
+          409: { description: "Email already exists" },
+        },
+      },
+    },
+
+    "/api/auth/login": {
+      post: {
+        summary: "Login user and issue JWT token",
+        tags: ["Auth"],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["email", "password"],
+                properties: {
+                  email: { type: "string" },
+                  password: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: { description: "JWT issued" },
+          400: { description: "Validation error" },
+          401: { description: "Invalid credentials" },
+        },
+      },
+    },
     // -------------------------
     // STUDENTS
     // -------------------------

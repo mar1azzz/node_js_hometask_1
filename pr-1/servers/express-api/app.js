@@ -7,7 +7,12 @@ const express = require("express");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDoc = require("./swagger");
 
-module.exports = function createApp({ studentsRouter, backupRouter, logger }) {
+module.exports = function createApp({
+  studentsRouter,
+  backupRouter,
+  authRouter,
+  logger,
+}) {
   const app = express();
 
   //CORS for front
@@ -17,7 +22,7 @@ module.exports = function createApp({ studentsRouter, backupRouter, logger }) {
       "Access-Control-Allow-Methods",
       "GET,POST,PUT,PATCH,DELETE,OPTIONS"
     );
-    res.header("Access-Control-Allow-Headers", "Content-Type");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
     if (req.method === "OPTIONS") {
       return res.sendStatus(200);
@@ -28,6 +33,7 @@ module.exports = function createApp({ studentsRouter, backupRouter, logger }) {
 
   // Swagger UI
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
+  app.use("/api/auth", authRouter);
   app.use("/api/students", studentsRouter);
   app.use("/api/backup", backupRouter);
   app.get("/ping", (req, res) => {
@@ -39,9 +45,16 @@ module.exports = function createApp({ studentsRouter, backupRouter, logger }) {
 
   // Global error handler
   app.use((err, req, res, next) => {
-    logger.log("Unhandled error:", err.message || String(err));
-    console.error(err);
-    res.status(500).json({ error: "Internal Server Error" });
+    const status = err.status || 500;
+
+    logger.log("Error:", {
+      status,
+      message: err.message,
+    });
+
+    res.status(status).json({
+      error: err.message || "Internal Server Error",
+    });
   });
 
   return app;

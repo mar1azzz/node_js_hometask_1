@@ -10,13 +10,16 @@
 
 const express = require("express");
 
+const authenticateJWT = require("../middlewares/authenticateJWT");
+const requireRole = require("../middlewares/requireRole");
+
 module.exports = function createBackupRouter(controller) {
   const router = express.Router();
 
-  router.post("/start", controller.start);
-  router.post("/stop", controller.stop);
-  router.get("/status", controller.status);
-  router.get("/report", controller.report);
+  router.post("/start", requireRole("admin"), controller.start);
+  router.post("/stop", requireRole("admin"), controller.stop);
+  router.get("/status", requireRole("admin"), controller.status);
+  router.get("/report", requireRole("admin"), controller.report);
 
   return router;
 };

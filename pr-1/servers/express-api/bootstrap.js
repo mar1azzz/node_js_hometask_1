@@ -15,6 +15,10 @@ const {
   checkDbConnection,
 } = require("../../modules/common/db/sequelize");
 
+const RoleRepository = require("../../modules/auth/repository/RoleRepository");
+const UserRepository = require("../../modules/auth/repository/UserRepository");
+const AuthService = require("../../modules/auth/services/authService");
+
 module.exports = async function bootstrap(args = []) {
   const isVerbose = args.includes("--verbose");
   const isQuiet = args.includes("--quiet");
@@ -26,6 +30,10 @@ module.exports = async function bootstrap(args = []) {
   logger.log("Using PostgreSQL student repository");
 
   const backupManager = new BackupManager(repo, "backup", 5000);
+
+  const roleRepo = new RoleRepository(sequelize);
+  const userRepo = new UserRepository(sequelize);
+  const authService = new AuthService({ userRepo, roleRepo });
 
   // Event → logger wiring
   const eventConfig = {
@@ -45,5 +53,5 @@ module.exports = async function bootstrap(args = []) {
     events.on(eventName, handlerFactory(eventName, fields));
   }
 
-  return { logger, repo, services, backupManager };
+  return { logger, repo, services, backupManager, authService };
 };

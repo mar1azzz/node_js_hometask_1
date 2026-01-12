@@ -14,6 +14,10 @@ const {
   validateGroupParam,
 } = require("../middlewares/validators/studentsValidators");
 
+const authenticateJWT = require("../middlewares/authenticateJWT");
+const requireRole = require("../middlewares/requireRole");
+const requireAnyRole = require("../middlewares/requireAnyRole");
+
 const { validationResult } = require("express-validator");
 
 function withValidation(handler) {
@@ -30,10 +34,18 @@ module.exports = function createStudentsRouter(controller) {
   const router = express.Router();
 
   // /api/students
-  router.get("/", controller.getAll);
-  router.post("/", validateCreateStudent, withValidation(controller.create));
+  router.get("/", authenticateJWT, controller.getAll);
+  router.post(
+    "/",
+    authenticateJWT,
+    requireAnyRole(["teacher", "admin"]),
+    validateCreateStudent,
+    withValidation(controller.create)
+  );
   router.put(
     "/",
+    authenticateJWT,
+    requireRole("admin"),
     validateReplaceCollection,
     withValidation(controller.replaceCollection)
   );
@@ -41,20 +53,34 @@ module.exports = function createStudentsRouter(controller) {
   // Specific sub-routes should go BEFORE "/:id"
   router.get(
     "/group/:id",
+    authenticateJWT,
     validateGroupParam,
     withValidation(controller.getByGroup)
   );
-  router.get("/average-age", controller.getAverageAge);
+  router.get("/average-age", authenticateJWT, controller.getAverageAge);
 
   // /api/students/:id
-  router.get("/:id", validateIdParam, withValidation(controller.getById));
+  router.get(
+    "/:id",
+    authenticateJWT,
+    validateIdParam,
+    withValidation(controller.getById)
+  );
   router.patch(
     "/:id",
+    authenticateJWT,
+    requireAnyRole(["teacher", "admin"]),
     validateIdParam,
     validateUpdateStudent,
     withValidation(controller.updateById)
   );
-  router.delete("/:id", validateIdParam, withValidation(controller.removeById));
+  router.delete(
+    "/:id",
+    authenticateJWT,
+    requireRole("admin"),
+    validateIdParam,
+    withValidation(controller.removeById)
+  );
 
   return router;
 };
