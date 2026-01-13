@@ -5,17 +5,24 @@
 
 module.exports = {
   openapi: "3.0.0",
+
   info: {
     title: "Students Management System API",
-    version: "1.0.0",
-    description:
-      "HTTP API for Students Management System (Labs 1–3). Includes student CRUD, backup controls, and reporting.",
+    version: "2.0.0",
+    description: `
+Students Management System with authentication and role-based access control.
+
+Roles:
+- student — minimal access, can view own grades
+- teacher — can manage students and assign grades
+- admin — full access to all system operations
+`,
   },
 
   servers: [
     {
       url: "http://localhost:3000",
-      description: "Local server",
+      description: "Local development server",
     },
   ],
 
@@ -28,16 +35,28 @@ module.exports = {
       },
     },
   },
+
   security: [{ bearerAuth: [] }],
 
+  tags: [
+    { name: "Auth", description: "Authentication and authorization" },
+    { name: "Students", description: "Students management" },
+    { name: "Subjects", description: "University subjects catalog" },
+    { name: "Grades", description: "Student grades" },
+    { name: "Backup", description: "Backup subsystem (admin only)" },
+  ],
+
   paths: {
-    // -------------------------
+    // =========================
     // AUTH
-    // -------------------------
+    // =========================
     "/api/auth/register": {
       post: {
-        summary: "Register new user",
         tags: ["Auth"],
+        summary: "Register new user",
+        description:
+          "Public endpoint. Registers a new user. If role=student, also creates a student profile.",
+        security: [],
         requestBody: {
           required: true,
           content: {
@@ -48,19 +67,19 @@ module.exports = {
                 properties: {
                   name: { type: "string" },
                   surname: { type: "string" },
-                  email: { type: "string" },
+                  email: { type: "string", format: "email" },
                   password: { type: "string", minLength: 6 },
                   roleName: {
                     type: "string",
-                    description: "Optional. For testing/admin use.",
+                    description: "student | teacher | admin",
                   },
                   age: {
                     type: "number",
-                    description: "Student age (only for role=student)",
+                    description: "Only for role=student",
                   },
                   group: {
                     type: "string",
-                    description: "Student group (only for role=student)",
+                    description: "Only for role=student",
                   },
                 },
               },
@@ -77,8 +96,9 @@ module.exports = {
 
     "/api/auth/login": {
       post: {
-        summary: "Login user and issue JWT token",
         tags: ["Auth"],
+        summary: "Login and receive JWT",
+        security: [],
         requestBody: {
           required: true,
           content: {
@@ -87,7 +107,7 @@ module.exports = {
                 type: "object",
                 required: ["email", "password"],
                 properties: {
-                  email: { type: "string" },
+                  email: { type: "string", format: "email" },
                   password: { type: "string" },
                 },
               },
@@ -96,34 +116,41 @@ module.exports = {
         },
         responses: {
           200: { description: "JWT issued" },
-          400: { description: "Validation error" },
           401: { description: "Invalid credentials" },
         },
       },
     },
-    // -------------------------
+
+    // =========================
     // STUDENTS
-    // -------------------------
+    // =========================
     "/api/students": {
       get: {
+        tags: ["Students"],
         summary: "Get all students",
-        tags: ["Students"],
-        responses: {
-          200: {
-            description: "List of students",
-          },
-        },
+        description: "Roles: student, teacher, admin",
+        responses: { 200: { description: "Students list" } },
       },
-      post: {
-        summary: "Create new student",
+    },
+
+    "/api/students/{id}": {
+      get: {
         tags: ["Students"],
+        summary: "Get student by ID",
+        parameters: [{ name: "id", in: "path", required: true }],
+        responses: { 200: {}, 404: {} },
+      },
+      patch: {
+        tags: ["Students"],
+        summary: "Update student",
+        description: "Roles: teacher, admin",
+        parameters: [{ name: "id", in: "path", required: true }],
         requestBody: {
           required: true,
           content: {
             "application/json": {
               schema: {
                 type: "object",
-                required: ["name", "age", "group"],
                 properties: {
                   name: { type: "string" },
                   age: { type: "number" },
@@ -133,129 +160,155 @@ module.exports = {
             },
           },
         },
-        responses: {
-          201: { description: "Student created" },
-          400: { description: "Validation error" },
-        },
-      },
-      put: {
-        summary: "Replace entire students collection",
-        tags: ["Students"],
-        requestBody: {
-          required: true,
-          content: {
-            "application/json": {
-              schema: { type: "array" },
-            },
-          },
-        },
-        responses: {
-          200: { description: "Collection replaced" },
-        },
-      },
-    },
-
-    "/api/students/{id}": {
-      get: {
-        summary: "Get student by ID",
-        tags: ["Students"],
-        parameters: [{ name: "id", in: "path", required: true }],
-        responses: {
-          200: { description: "Student found" },
-          404: { description: "Not found" },
-        },
-      },
-      patch: {
-        summary: "Update student by ID",
-        tags: ["Students"],
-        parameters: [{ name: "id", in: "path", required: true }],
-        requestBody: {
-          required: false,
-          content: {
-            "application/json": {
-              schema: { type: "object" },
-            },
-          },
-        },
-        responses: {
-          200: { description: "Student updated" },
-          404: { description: "Not found" },
-        },
+        responses: { 200: {}, 404: {} },
       },
       delete: {
-        summary: "Delete student by ID",
         tags: ["Students"],
+        summary: "Delete student",
+        description: "Role: admin",
         parameters: [{ name: "id", in: "path", required: true }],
-        responses: {
-          200: { description: "Deleted" },
-          404: { description: "Not found" },
-        },
+        responses: { 200: {}, 404: {} },
       },
     },
 
     "/api/students/group/{id}": {
       get: {
-        summary: "Get students by group",
         tags: ["Students"],
+        summary: "Get students by group",
         parameters: [{ name: "id", in: "path", required: true }],
-        responses: {
-          200: { description: "Group result" },
-        },
+        responses: { 200: {} },
       },
     },
 
     "/api/students/average-age": {
       get: {
-        summary: "Get average age",
         tags: ["Students"],
-        responses: {
-          200: { description: "Average age returned" },
-        },
+        summary: "Get average age",
+        responses: { 200: {} },
       },
     },
 
-    // -------------------------
-    // BACKUP ENDPOINTS
-    // -------------------------
+    // =========================
+    // SUBJECTS
+    // =========================
+    "/api/subjects": {
+      get: {
+        tags: ["Subjects"],
+        summary: "Get subjects",
+        responses: { 200: {} },
+      },
+      post: {
+        tags: ["Subjects"],
+        summary: "Create subject",
+        description: "Role: admin",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["subjectName"],
+                properties: {
+                  subjectName: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+        responses: { 201: {} },
+      },
+    },
+
+    "/api/subjects/{id}": {
+      delete: {
+        tags: ["Subjects"],
+        summary: "Delete subject",
+        description: "Role: admin",
+        parameters: [{ name: "id", in: "path", required: true }],
+        responses: { 200: {}, 404: {} },
+      },
+    },
+
+    // =========================
+    // GRADES
+    // =========================
+    "/api/grades": {
+      post: {
+        tags: ["Grades"],
+        summary: "Assign grade",
+        description: "Roles: teacher, admin",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["studentId", "subjectId", "grade"],
+                properties: {
+                  studentId: { type: "string" },
+                  subjectId: { type: "string" },
+                  grade: { type: "number" },
+                },
+              },
+            },
+          },
+        },
+        responses: { 201: {} },
+      },
+    },
+
+    "/api/grades/my": {
+      get: {
+        tags: ["Grades"],
+        summary: "Get my grades",
+        description: "Role: student",
+        responses: { 200: {} },
+      },
+    },
+
+    "/api/grades/student/{id}": {
+      get: {
+        tags: ["Grades"],
+        summary: "Get grades by student",
+        description: "Roles: teacher, admin",
+        parameters: [{ name: "id", in: "path", required: true }],
+        responses: { 200: {} },
+      },
+    },
+
+    // =========================
+    // BACKUP
+    // =========================
     "/api/backup/start": {
       post: {
-        summary: "Start backup mechanism",
         tags: ["Backup"],
-        responses: {
-          200: { description: "Started" },
-          409: { description: "Already running" },
-        },
+        summary: "Start backup",
+        description: "Role: admin",
+        responses: { 200: {}, 409: {} },
       },
     },
-
     "/api/backup/stop": {
       post: {
-        summary: "Stop backup mechanism",
         tags: ["Backup"],
-        responses: {
-          200: { description: "Stopped" },
-          409: { description: "Not running" },
-        },
+        summary: "Stop backup",
+        description: "Role: admin",
+        responses: { 200: {}, 409: {} },
       },
     },
-
     "/api/backup/status": {
       get: {
-        summary: "Get backup status",
         tags: ["Backup"],
-        responses: {
-          200: { description: "Backup status" },
-        },
+        summary: "Backup status",
+        description: "Role: admin",
+        responses: { 200: {} },
       },
     },
-
     "/api/backup/report": {
       get: {
-        summary: "Get backup summary report",
         tags: ["Backup"],
-        responses: {
-          200: { description: "Report returned" },
-        },
+        summary: "Backup report",
+        description: "Role: admin",
+        responses: { 200: {} },
       },
     },
   },

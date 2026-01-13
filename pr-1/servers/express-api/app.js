@@ -9,6 +9,8 @@ const swaggerDoc = require("./swagger");
 
 module.exports = function createApp({
   studentsRouter,
+  subjectsRouter,
+  gradesRouter,
   backupRouter,
   authRouter,
   logger,
@@ -35,6 +37,8 @@ module.exports = function createApp({
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
   app.use("/api/auth", authRouter);
   app.use("/api/students", studentsRouter);
+  app.use("/api/subjects", subjectsRouter);
+  app.use("/api/grades", gradesRouter);
   app.use("/api/backup", backupRouter);
   app.get("/ping", (req, res) => {
     res.json({ ok: true, message: "Students API is alive" });

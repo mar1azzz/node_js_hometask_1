@@ -26,46 +26,6 @@ module.exports = function createStudentsController({ repo, services, logger }) {
     },
 
     /**
-     * POST /api/students
-     * Creates a new student from request body: { name, age, group }.
-     */
-    create: async (req, res, next) => {
-      try {
-        const { name, age, group } = req.body || {};
-        const student = await services.addStudent(
-          repo,
-          logger,
-          name,
-          age,
-          group
-        );
-        res.status(201).json(student);
-      } catch (err) {
-        next(err);
-      }
-    },
-
-    /**
-     * PUT /api/students
-     * Completely replaces existing students collection
-     * with a new array provided in request body.
-     */
-    replaceCollection: async (req, res, next) => {
-      try {
-        const incoming = req.body;
-        const count = await repo.replaceAll(incoming);
-
-        logger.log("Students collection replaced via PUT /api/students", {
-          count,
-        });
-
-        res.status(200).json({ replaced: true, count });
-      } catch (err) {
-        next(err);
-      }
-    },
-
-    /**
      * GET /api/students/:id
      * Returns student by ID or 404 if not found.
      */

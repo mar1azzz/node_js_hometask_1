@@ -10,7 +10,7 @@
 const events = require("../../events/AppEvents");
 
 module.exports = async function removeStudent(repo, logger, id) {
-  const removed = repo.delete(id);
+  const removed = await repo.delete(id);
   logger.log(removed ? `Student ${id} removed` : `Student ${id} not found`);
   events.emit("student:removed", { id, removed });
   return removed;

@@ -18,6 +18,8 @@ const {
 const RoleRepository = require("../../modules/auth/repository/RoleRepository");
 const UserRepository = require("../../modules/auth/repository/UserRepository");
 const AuthService = require("../../modules/auth/services/authService");
+const SubjectRepository = require("../../modules/subjects/repository/SubjectRepository");
+const GradeRepository = require("../../modules/grades/repository/GradeRepository");
 
 module.exports = async function bootstrap(args = []) {
   const isVerbose = args.includes("--verbose");
@@ -33,6 +35,8 @@ module.exports = async function bootstrap(args = []) {
 
   const roleRepo = new RoleRepository(sequelize);
   const userRepo = new UserRepository(sequelize);
+  const subjectRepo = new SubjectRepository(sequelize);
+  const gradeRepo = new GradeRepository(sequelize);
   const authService = new AuthService({
     userRepo,
     roleRepo,
@@ -57,5 +61,13 @@ module.exports = async function bootstrap(args = []) {
     events.on(eventName, handlerFactory(eventName, fields));
   }
 
-  return { logger, repo, services, backupManager, authService };
+  return {
+    logger,
+    repo,
+    services,
+    backupManager,
+    authService,
+    subjectRepo,
+    gradeRepo,
+  };
 };

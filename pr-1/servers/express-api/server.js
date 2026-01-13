@@ -18,18 +18,29 @@ require("dotenv").config();
 const createStudentsController = require("./controllers/studentsController");
 const createBackupController = require("./controllers/backupController");
 const createAuthController = require("./controllers/authController");
+const createSubjectsController = require("./controllers/subjectsController");
+const createGradesController = require("./controllers/gradesController");
 
 const createStudentsRouter = require("./routes/studentsRoutes");
 const createBackupRouter = require("./routes/backupRoutes");
 const createAuthRouter = require("./routes/authRoutes");
+const createSubjectsRouter = require("./routes/subjectsRoutes");
+const createGradesRouter = require("./routes/gradesRoutes");
 
 const printRoutes = require("./utils/printRoutes");
 
 (async () => {
   const args = process.argv.slice(2);
 
-  const { logger, repo, services, backupManager, authService } =
-    await bootstrap(args);
+  const {
+    logger,
+    repo,
+    services,
+    backupManager,
+    authService,
+    subjectRepo,
+    gradeRepo,
+  } = await bootstrap(args);
 
   const studentsController = createStudentsController({
     repo,
@@ -38,12 +49,27 @@ const printRoutes = require("./utils/printRoutes");
   });
   const backupController = createBackupController({ backupManager, logger });
   const authController = createAuthController({ authService, logger });
+  const subjectsController = createSubjectsController({ subjectRepo });
+  const gradesController = createGradesController({
+    gradeRepo,
+    studentRepo: repo,
+  });
 
   const studentsRouter = createStudentsRouter(studentsController);
   const backupRouter = createBackupRouter(backupController);
   const authRouter = createAuthRouter(authController);
 
-  const app = createApp({ studentsRouter, backupRouter, authRouter, logger });
+  const subjectsRouter = createSubjectsRouter(subjectsController);
+  const gradesRouter = createGradesRouter(gradesController);
+
+  const app = createApp({
+    studentsRouter,
+    backupRouter,
+    authRouter,
+    subjectsRouter,
+    gradesRouter,
+    logger,
+  });
 
   const PORT = process.env.EXPRESS_PORT || 3000;
   app.listen(PORT, () => {

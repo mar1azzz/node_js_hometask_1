@@ -10,7 +10,7 @@
 const events = require("../../events/AppEvents");
 
 module.exports = async function getStudentById(repo, logger, id) {
-  const student = repo.findById(id);
+  const student = await repo.findById(id);
   logger.log("Student:", student);
   events.emit("student:requested", { id, found: !!student });
   return student;

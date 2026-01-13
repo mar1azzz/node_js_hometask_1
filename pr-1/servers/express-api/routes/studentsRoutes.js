@@ -7,9 +7,7 @@
 
 const express = require("express");
 const {
-  validateCreateStudent,
   validateUpdateStudent,
-  validateReplaceCollection,
   validateIdParam,
   validateGroupParam,
 } = require("../middlewares/validators/studentsValidators");
@@ -35,20 +33,6 @@ module.exports = function createStudentsRouter(controller) {
 
   // /api/students
   router.get("/", authenticateJWT, controller.getAll);
-  router.post(
-    "/",
-    authenticateJWT,
-    requireAnyRole(["teacher", "admin"]),
-    validateCreateStudent,
-    withValidation(controller.create)
-  );
-  router.put(
-    "/",
-    authenticateJWT,
-    requireRole("admin"),
-    validateReplaceCollection,
-    withValidation(controller.replaceCollection)
-  );
 
   // Specific sub-routes should go BEFORE "/:id"
   router.get(
