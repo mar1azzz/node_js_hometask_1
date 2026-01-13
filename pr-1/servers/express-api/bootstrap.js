@@ -33,7 +33,11 @@ module.exports = async function bootstrap(args = []) {
 
   const roleRepo = new RoleRepository(sequelize);
   const userRepo = new UserRepository(sequelize);
-  const authService = new AuthService({ userRepo, roleRepo });
+  const authService = new AuthService({
+    userRepo,
+    roleRepo,
+    studentRepo: repo,
+  });
 
   // Event → logger wiring
   const eventConfig = {

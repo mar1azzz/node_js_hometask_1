@@ -12,6 +12,9 @@ const validateRegister = [
   body("email").isEmail().normalizeEmail(),
   body("password").isString().isLength({ min: 6 }),
   body("roleName").optional().isString().trim().notEmpty(),
+  // only meaningful for students
+  body("age").optional().isInt({ min: 0 }),
+  body("group").optional().isString().trim(),
 ];
 
 const validateLogin = [

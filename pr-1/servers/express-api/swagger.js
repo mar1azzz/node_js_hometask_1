@@ -54,6 +54,14 @@ module.exports = {
                     type: "string",
                     description: "Optional. For testing/admin use.",
                   },
+                  age: {
+                    type: "number",
+                    description: "Student age (only for role=student)",
+                  },
+                  group: {
+                    type: "string",
+                    description: "Student group (only for role=student)",
+                  },
                 },
               },
             },

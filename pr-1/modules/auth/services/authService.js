@@ -9,12 +9,21 @@ const { hashPassword, verifyPassword } = require("../utils/password");
 const { signToken } = require("../utils/jwt");
 
 class AuthService {
-  constructor({ userRepo, roleRepo }) {
+  constructor({ userRepo, roleRepo, studentRepo }) {
     this.userRepo = userRepo;
     this.roleRepo = roleRepo;
+    this.studentRepo = studentRepo;
   }
 
-  async registerUser({ name, surname, email, password, roleName = "student" }) {
+  async registerUser({
+    name,
+    surname,
+    email,
+    password,
+    roleName = "student",
+    age,
+    group,
+  }) {
     const normalizedEmail = String(email).trim().toLowerCase();
 
     const existing = await this.userRepo.findByEmail(normalizedEmail);
@@ -41,7 +50,15 @@ class AuthService {
       roleId: role.id,
     });
 
-    // Do not expose password hash
+    if (role.name === "student") {
+      await this.studentRepo.create({
+        name: user.name,
+        age: age !== undefined ? Number(age) : 0,
+        group: group ? String(group) : "UNASSIGNED",
+        userId: user.id,
+      });
+    }
+
     return {
       id: user.id,
       name: user.name,

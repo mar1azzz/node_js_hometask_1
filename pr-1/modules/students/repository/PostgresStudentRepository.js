@@ -6,18 +6,26 @@ class PostgresStudentRepository {
     this.Student = createStudentModel(sequelize);
   }
 
-  async create(name, age, group) {
+  async create({ name, age, group, userId = null }) {
     const student = await this.Student.create({
       id: generateId(),
       name: String(name),
       age: Number(age),
       group: String(group),
+      userId,
     });
     return student.get({ plain: true });
   }
 
   async findById(id) {
     const student = await this.Student.findByPk(id);
+    return student ? student.get({ plain: true }) : null;
+  }
+
+  async findByUserId(userId) {
+    const student = await this.Student.findOne({
+      where: { userId: String(userId) },
+    });
     return student ? student.get({ plain: true }) : null;
   }
 
@@ -66,11 +74,7 @@ class PostgresStudentRepository {
 
   async replaceAll(students) {
     await this.Student.sequelize.transaction(async (t) => {
-      await this.Student.destroy({
-        where: {},
-        truncate: true,
-        transaction: t,
-      });
+      await this.Student.destroy({ where: {}, truncate: true, transaction: t });
 
       for (const s of students) {
         await this.Student.create(
@@ -79,6 +83,7 @@ class PostgresStudentRepository {
             name: String(s.name),
             age: Number(s.age),
             group: String(s.group),
+            userId: s.userId ?? null,
           },
           { transaction: t }
         );
