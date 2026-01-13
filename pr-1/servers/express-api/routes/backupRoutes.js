@@ -16,10 +16,25 @@ const requireRole = require("../middlewares/requireRole");
 module.exports = function createBackupRouter(controller) {
   const router = express.Router();
 
-  router.post("/start", requireRole("admin"), controller.start);
-  router.post("/stop", requireRole("admin"), controller.stop);
-  router.get("/status", requireRole("admin"), controller.status);
-  router.get("/report", requireRole("admin"), controller.report);
+  router.post(
+    "/start",
+    authenticateJWT,
+    requireRole("admin"),
+    controller.start
+  );
+  router.post("/stop", authenticateJWT, requireRole("admin"), controller.stop);
+  router.get(
+    "/status",
+    authenticateJWT,
+    requireRole("admin"),
+    controller.status
+  );
+  router.get(
+    "/report",
+    authenticateJWT,
+    requireRole("admin"),
+    controller.report
+  );
 
   return router;
 };
