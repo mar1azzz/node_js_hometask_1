@@ -1,14 +1,17 @@
 /**
- * Сервис: вычисляет средний возраст студентов.
+ * Service: calculate mean age of all students.
  *
- * @param {StudentRepository} repo — хранилище
- * @param {Logger} logger — логгер
+ * @param {StudentRepository} repo
+ * @param {Logger} logger
  *
- * @returns {number} средний возраст
+ * @returns {number} average age
  */
 
-module.exports = function calculateAverageAge(repo, logger) {
-  const avg = repo.getAverageAge();
+const events = require("../../events/AppEvents");
+
+module.exports = async function calculateAverageAge(repo, logger) {
+  const avg = await repo.getAverageAge();
   logger.log("Average age:", avg);
+  events.emit("students:averageAgeCalculated", { averageAge: avg });
   return avg;
 };

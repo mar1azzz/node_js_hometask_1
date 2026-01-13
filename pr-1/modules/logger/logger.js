@@ -1,11 +1,11 @@
 /**
- * Основной логгер системы.
- * Поддерживает 3 режима:
- *  - обычный (INFO)
- *  - verbose (детальный)
- *  - quiet (лог отключён)
+ * Main logger system.
+ * Supports 3 modes:
+ * - normal (INFO)
+ * - verbose (detailed)
+ * - silent (log disabled)
  *
- * @method log(message, ...args) — вывод сообщения
+ * @method log(message, ...args) — output message
  */
 
 const formatSimple = require("./formatters/simpleFormatter");

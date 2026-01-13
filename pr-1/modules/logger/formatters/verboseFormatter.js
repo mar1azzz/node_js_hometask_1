@@ -1,9 +1,14 @@
 /**
- * Форматирует расширенный (VERBOSE) лог.
- * Добавляет системную информацию в структурированном виде.
+ * Produces detailed verbose log output.
  *
- * @param {string} message — сообщение
- * @param {Array<any>} args — данные для вывода
+ * Includes:
+ *  - timestamp
+ *  - message
+ *  - JSON-formatted arguments
+ *  - system information block
+ *
+ * @param {string} message
+ * @param {Array<any>} args
  *
  * @returns {{logLine: string, systemBlock: string}}
  */

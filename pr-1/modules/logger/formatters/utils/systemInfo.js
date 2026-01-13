@@ -1,6 +1,6 @@
 /**
- * Собирает информацию о системе (OS, CPU, память).
- * Используется только в verbose-режиме логгера.
+ * Collects system information (OS, CPU, RAM).
+ * Used in verbose mode of the logger to display runtime environment.
  */
 
 const os = require("os");

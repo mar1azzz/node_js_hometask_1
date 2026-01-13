@@ -1,6 +1,6 @@
 /**
- * Форматирует объект в красиво отформатированный JSON (2 пробела).
- * Используется для вывода данных в логах.
+ * Formats any object/value as pretty-printed JSON (2 spaces).
+ * Used by logger formatters for readable output.
  */
 
 module.exports = function pretty(obj) {
