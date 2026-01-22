@@ -22,10 +22,7 @@ const SubjectRepository = require("../../modules/subjects/repository/SubjectRepo
 const GradeRepository = require("../../modules/grades/repository/GradeRepository");
 
 module.exports = async function bootstrap(args = []) {
-  const isVerbose = args.includes("--verbose");
-  const isQuiet = args.includes("--quiet");
-
-  const logger = new Logger(isVerbose, isQuiet);
+  const logger = new Logger();
 
   await checkDbConnection();
   const repo = new PostgresStudentRepository(sequelize);

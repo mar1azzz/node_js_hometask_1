@@ -22,7 +22,7 @@ module.exports = function createApp({
     res.header("Access-Control-Allow-Origin", "http://localhost:5173");
     res.header(
       "Access-Control-Allow-Methods",
-      "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+      "GET,POST,PUT,PATCH,DELETE,OPTIONS",
     );
     res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
@@ -51,10 +51,15 @@ module.exports = function createApp({
   app.use((err, req, res, next) => {
     const status = err.status || 500;
 
-    logger.log("Error:", {
-      status,
-      message: err.message,
-    });
+    if (status >= 500) {
+      logger.error("Unhandled server error", err);
+    } else {
+      logger.warn("Client error", {
+        status,
+        message: err.message,
+        path: req.originalUrl,
+      });
+    }
 
     res.status(status).json({
       error: err.message || "Internal Server Error",

@@ -8,7 +8,8 @@
     "test:watch": "cross-env NODE_ENV=test JWT_SECRET=testsecret jest --watch",
     "test:coverage": "cross-env NODE_ENV=test JWT_SECRET=testsecret jest --coverage",
     "dev": "node servers/launcher.js",
-    "dev:express": "SET SERVER_MODE=express&& node servers/launcher.js",
+    "dev:express": "cross-env SERVER_MODE=express NODE_ENV=development node servers/launcher.js",
+    "start:prod": "cross-env SERVER_MODE=express NODE_ENV=production node servers/launcher.js",
     "dev:http1": "SET SERVER_MODE=http1&& node servers/launcher.js",
     "dev:http2": "SET SERVER_MODE=http2&& node servers/launcher.js",
     "dev:http3": "SET SERVER_MODE=http3&& node servers/launcher.js",
@@ -35,7 +36,8 @@
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.7",
     "swagger-ui-express": "^5.0.1",
-    "umzug": "^3.8.2"
+    "umzug": "^3.8.2",
+    "winston": "^3.19.0"
   },
   "devDependencies": {
     "cross-env": "^10.1.0",
@@ -63,7 +65,9 @@
       "!**/sequelize.js",
       "!**/launcher.js",
       "!**/swagger.js",
-      "!modules/common/db/migrate.js"
+      "!modules/common/db/migrate.js",
+      "!modules/logger/writer.js",
+      "!modules/logger/formatters/**"
     ],
     "coveragePathIgnorePatterns": [
       "/node_modules/",
