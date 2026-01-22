@@ -34,6 +34,42 @@ Roles:
         bearerFormat: "JWT",
       },
     },
+    schemas: {
+      Student: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          name: { type: "string" },
+          age: { type: "number" },
+          group: { type: "string" },
+        },
+      },
+
+      Subject: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          subjectName: { type: "string" },
+        },
+      },
+
+      Grade: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          studentId: { type: "string" },
+          subjectId: { type: "string" },
+          grade: { type: "number" },
+        },
+      },
+
+      AuthResponse: {
+        type: "object",
+        properties: {
+          token: { type: "string" },
+        },
+      },
+    },
   },
 
   security: [{ bearerAuth: [] }],
