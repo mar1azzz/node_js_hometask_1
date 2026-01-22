@@ -7,6 +7,7 @@ const express = require("express");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDoc = require("./swagger");
 const statusMonitor = require("express-status-monitor");
+const compression = require("compression");
 
 const authenticateJWT = require("./middlewares/authenticateJWT");
 const requireRole = require("./middlewares/requireRole");
@@ -37,12 +38,12 @@ module.exports = function createApp({
   });
   app.use(express.json());
 
+  // RESPONSE COMPRESSION
+  app.use(compression());
+
   // MONITORING (admin only)
-  app.use(
-    statusMonitor({
-      path: "/status",
-    }),
-  );
+  const monitor = statusMonitor();
+  app.get("/status", authenticateJWT, requireRole("admin"), monitor);
 
   // Swagger UI
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
