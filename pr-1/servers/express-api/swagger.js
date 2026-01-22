@@ -44,6 +44,7 @@ Roles:
     { name: "Subjects", description: "University subjects catalog" },
     { name: "Grades", description: "Student grades" },
     { name: "Backup", description: "Backup subsystem (admin only)" },
+    { name: "Monitoring", description: "Server monitoring and metrics" },
   ],
 
   paths: {
@@ -117,6 +118,28 @@ Roles:
         responses: {
           200: { description: "JWT issued" },
           401: { description: "Invalid credentials" },
+        },
+      },
+    },
+
+    // =========================
+    // MONITORING
+    // =========================
+    "/status": {
+      get: {
+        tags: ["Monitoring"],
+        summary: "Server monitoring dashboard",
+        description: "Displays server metrics (CPU, memory, requests).",
+        responses: {
+          200: {
+            description: "Monitoring dashboard HTML page",
+          },
+          401: {
+            description: "Unauthorized",
+          },
+          403: {
+            description: "Forbidden",
+          },
         },
       },
     },

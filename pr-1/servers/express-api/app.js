@@ -6,6 +6,10 @@ Does NOT contain business logic or dependency initialization.
 const express = require("express");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDoc = require("./swagger");
+const statusMonitor = require("express-status-monitor");
+
+const authenticateJWT = require("./middlewares/authenticateJWT");
+const requireRole = require("./middlewares/requireRole");
 
 module.exports = function createApp({
   studentsRouter,
@@ -32,6 +36,13 @@ module.exports = function createApp({
     next();
   });
   app.use(express.json());
+
+  // MONITORING (admin only)
+  app.use(
+    statusMonitor({
+      path: "/status",
+    }),
+  );
 
   // Swagger UI
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
