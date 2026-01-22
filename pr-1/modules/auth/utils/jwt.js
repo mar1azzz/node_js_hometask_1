@@ -21,7 +21,11 @@ function signToken(payload) {
 }
 
 function verifyToken(token) {
-  return jwt.verify(token, getJwtSecret());
+  try {
+    return jwt.verify(token, getJwtSecret());
+  } catch {
+    return null;
+  }
 }
 
 module.exports = {
