@@ -1,35 +1,40 @@
 /**
- * Main logger system.
- * Supports 3 modes:
- * - normal (INFO)
- * - verbose (detailed)
- * - silent (log disabled)
+ * Logger - application-level logging facade.
  *
- * @method log(message, ...args) — output message
+ * Acts as a stable interface for the rest of the application.
+ * Delegates actual logging to Winston-based implementation.
+ *
+ * Responsibilities:
+ *  - provide simple log / error / warn / debug API
+ *  - normalize error handling
+ *  - hide logging engine details from business logic
  */
-
-const formatSimple = require("./formatters/simpleFormatter");
-const formatVerbose = require("./formatters/verboseFormatter");
-const writer = require("./writer");
+const createWinstonLogger = require("./winstonLogger");
 
 class Logger {
-  constructor(verbose = false, quiet = false) {
-    this.verbose = verbose;
-    this.quiet = quiet;
+  constructor() {
+    this.winston = createWinstonLogger();
   }
 
-  log(message, ...args) {
-    if (this.quiet) return;
-
-    if (this.verbose) {
-      const { logLine, systemBlock } = formatVerbose(message, args);
-      writer.write(logLine);
-      writer.write(systemBlock);
+  log(message, meta = {}) {
+    if (meta instanceof Error) {
+      this.winston.error(meta);
       return;
     }
 
-    const line = formatSimple(message, args);
-    writer.write(line);
+    this.winston.info(message, meta);
+  }
+
+  error(message, meta = {}) {
+    this.winston.error(message, meta);
+  }
+
+  warn(message, meta = {}) {
+    this.winston.warn(message, meta);
+  }
+
+  debug(message, meta = {}) {
+    this.winston.debug(message, meta);
   }
 }
 

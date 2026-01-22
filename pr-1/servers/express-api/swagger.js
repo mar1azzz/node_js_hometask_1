@@ -34,6 +34,42 @@ Roles:
         bearerFormat: "JWT",
       },
     },
+    schemas: {
+      Student: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          name: { type: "string" },
+          age: { type: "number" },
+          group: { type: "string" },
+        },
+      },
+
+      Subject: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          subjectName: { type: "string" },
+        },
+      },
+
+      Grade: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          studentId: { type: "string" },
+          subjectId: { type: "string" },
+          grade: { type: "number" },
+        },
+      },
+
+      AuthResponse: {
+        type: "object",
+        properties: {
+          token: { type: "string" },
+        },
+      },
+    },
   },
 
   security: [{ bearerAuth: [] }],
@@ -44,6 +80,7 @@ Roles:
     { name: "Subjects", description: "University subjects catalog" },
     { name: "Grades", description: "Student grades" },
     { name: "Backup", description: "Backup subsystem (admin only)" },
+    { name: "Monitoring", description: "Server monitoring and metrics" },
   ],
 
   paths: {
@@ -117,6 +154,28 @@ Roles:
         responses: {
           200: { description: "JWT issued" },
           401: { description: "Invalid credentials" },
+        },
+      },
+    },
+
+    // =========================
+    // MONITORING
+    // =========================
+    "/status": {
+      get: {
+        tags: ["Monitoring"],
+        summary: "Server monitoring dashboard",
+        description: "Displays server metrics (CPU, memory, requests).",
+        responses: {
+          200: {
+            description: "Monitoring dashboard HTML page",
+          },
+          401: {
+            description: "Unauthorized",
+          },
+          403: {
+            description: "Forbidden",
+          },
         },
       },
     },

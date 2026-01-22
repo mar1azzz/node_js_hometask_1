@@ -6,6 +6,10 @@ Does NOT contain business logic or dependency initialization.
 const express = require("express");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDoc = require("./swagger");
+const statusMonitor = require("express-status-monitor");
+
+const authenticateJWT = require("./middlewares/authenticateJWT");
+const requireRole = require("./middlewares/requireRole");
 
 module.exports = function createApp({
   studentsRouter,
@@ -22,7 +26,7 @@ module.exports = function createApp({
     res.header("Access-Control-Allow-Origin", "http://localhost:5173");
     res.header(
       "Access-Control-Allow-Methods",
-      "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+      "GET,POST,PUT,PATCH,DELETE,OPTIONS",
     );
     res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
@@ -32,6 +36,13 @@ module.exports = function createApp({
     next();
   });
   app.use(express.json());
+
+  // MONITORING (admin only)
+  app.use(
+    statusMonitor({
+      path: "/status",
+    }),
+  );
 
   // Swagger UI
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
@@ -51,10 +62,15 @@ module.exports = function createApp({
   app.use((err, req, res, next) => {
     const status = err.status || 500;
 
-    logger.log("Error:", {
-      status,
-      message: err.message,
-    });
+    if (status >= 500) {
+      logger.error("Unhandled server error", err);
+    } else {
+      logger.warn("Client error", {
+        status,
+        message: err.message,
+        path: req.originalUrl,
+      });
+    }
 
     res.status(status).json({
       error: err.message || "Internal Server Error",

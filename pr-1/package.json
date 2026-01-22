@@ -4,9 +4,12 @@
   "description": "In this Practical Task you will work with pure Node.js without any frameworks and external libraries.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "cross-env NODE_ENV=test JWT_SECRET=testsecret jest",
+    "test:watch": "cross-env NODE_ENV=test JWT_SECRET=testsecret jest --watch",
+    "test:coverage": "cross-env NODE_ENV=test JWT_SECRET=testsecret jest --coverage",
     "dev": "node servers/launcher.js",
-    "dev:express": "SET SERVER_MODE=express&& node servers/launcher.js",
+    "dev:express": "cross-env SERVER_MODE=express NODE_ENV=development node servers/launcher.js",
+    "start:prod": "cross-env SERVER_MODE=express NODE_ENV=production node servers/launcher.js",
     "dev:http1": "SET SERVER_MODE=http1&& node servers/launcher.js",
     "dev:http2": "SET SERVER_MODE=http2&& node servers/launcher.js",
     "dev:http3": "SET SERVER_MODE=http3&& node servers/launcher.js",
@@ -27,12 +30,54 @@
     "bcrypt": "^6.0.0",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "express-status-monitor": "^1.3.4",
     "express-validator": "^7.3.1",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.16.3",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.7",
     "swagger-ui-express": "^5.0.1",
-    "umzug": "^3.8.2"
+    "umzug": "^3.8.2",
+    "winston": "^3.19.0"
+  },
+  "devDependencies": {
+    "cross-env": "^10.1.0",
+    "jest": "^30.2.0",
+    "supertest": "^7.2.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "clearMocks": true,
+    "collectCoverage": true,
+    "coverageDirectory": "coverage",
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
+    },
+    "collectCoverageFrom": [
+      "modules/**/*.js",
+      "servers/express-api/**/*.js",
+      "!**/node_modules/**",
+      "!**/migrations/**",
+      "!**/sequelize.js",
+      "!**/launcher.js",
+      "!**/swagger.js",
+      "!modules/common/db/migrate.js",
+      "!modules/logger/writer.js",
+      "!modules/logger/formatters/**"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/modules/common/db/migrate.js",
+      "/servers/express-api/server.js",
+      "/servers/express-api/bootstrap.js"
+    ],
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/$1"
+    }
   }
 }
