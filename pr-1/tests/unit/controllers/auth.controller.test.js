@@ -62,3 +62,52 @@ test("authController works", async () => {
   await controller.register({ body: {} }, res, jest.fn());
   await controller.login({ body: {} }, res, jest.fn());
 });
+
+test("register success logs and returns 201", async () => {
+  const logger = { log: jest.fn() };
+
+  const controller = createAuthController({
+    authService: {
+      registerUser: jest.fn().mockResolvedValue({ id: 1, email: "a@b.com" }),
+    },
+    logger,
+  });
+
+  const res = mockRes();
+  await controller.register({ body: {} }, res, jest.fn());
+
+  expect(res.status).toHaveBeenCalledWith(201);
+  expect(logger.log).toHaveBeenCalled();
+});
+
+test("register works when req.body is undefined", async () => {
+  const controller = createAuthController({
+    authService: {
+      registerUser: jest.fn().mockResolvedValue({ id: 1, email: "x@y.com" }),
+    },
+    logger: { log: jest.fn() },
+  });
+
+  const res = mockRes();
+
+  await controller.register({}, res, jest.fn());
+
+  expect(res.status).toHaveBeenCalledWith(201);
+});
+
+test("login works when req.body is undefined", async () => {
+  const controller = createAuthController({
+    authService: {
+      loginUser: jest.fn().mockResolvedValue({
+        user: { id: 1, role: "student" },
+      }),
+    },
+    logger: { log: jest.fn() },
+  });
+
+  const res = mockRes();
+
+  await controller.login({}, res, jest.fn());
+
+  expect(res.status).toHaveBeenCalledWith(200);
+});

@@ -40,4 +40,16 @@ describe("SubjectRepository", () => {
     const res = await repo.delete("nope");
     expect(res).toBe(false);
   });
+
+  test("findById returns subject when found", async () => {
+    const repo = new SubjectRepository({});
+
+    repo.Subject.findByPk.mockResolvedValue({
+      get: () => ({ id: "s1", subjectName: "Math" }),
+    });
+
+    const res = await repo.findById("s1");
+
+    expect(res).toEqual({ id: "s1", subjectName: "Math" });
+  });
 });

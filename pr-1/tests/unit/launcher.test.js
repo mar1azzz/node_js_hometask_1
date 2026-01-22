@@ -1,8 +1,15 @@
 jest.mock("child_process", () => ({
-  exec: jest.fn(),
+  spawn: jest.fn(() => ({
+    on: jest.fn(),
+  })),
 }));
 
-test("launcher does not crash", () => {
-  process.env.SERVER_MODE = "express";
-  require("../../servers/launcher");
+describe("launcher", () => {
+  test("launcher does not crash in express mode", () => {
+    process.env.SERVER_MODE = "express";
+
+    expect(() => {
+      require("../../servers/launcher");
+    }).not.toThrow();
+  });
 });

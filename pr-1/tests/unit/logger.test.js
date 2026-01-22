@@ -1,68 +1,72 @@
+jest.mock("winston", () => {
+  const mockLogger = {
+    info: jest.fn(),
+    error: jest.fn(),
+    warn: jest.fn(),
+    debug: jest.fn(),
+  };
+
+  return {
+    createLogger: jest.fn(() => mockLogger),
+    format: {
+      combine: jest.fn(),
+      timestamp: jest.fn(),
+      errors: jest.fn(),
+      printf: jest.fn(),
+      colorize: jest.fn(),
+    },
+    transports: {
+      Console: jest.fn(),
+      File: jest.fn(),
+    },
+  };
+});
+
 const Logger = require("../../modules/logger/logger");
-const writer = require("../../modules/logger/writer");
+const winston = require("winston");
 
-jest.mock("../../modules/logger/writer", () => ({
-  write: jest.fn(),
-}));
+describe("Logger (full coverage)", () => {
+  let logger;
+  let winstonInstance;
 
-describe("Logger", () => {
   beforeEach(() => {
-    writer.write.mockReset();
-    writer.write.mockImplementation(() => undefined);
+    jest.clearAllMocks();
+    logger = new Logger();
+    winstonInstance = winston.createLogger.mock.results[0].value;
   });
 
-  test("normal logger writes simple log", () => {
-    const logger = new Logger(false, false);
+  test("constructor creates winston instance", () => {
+    expect(winston.createLogger).toHaveBeenCalled();
+  });
 
+  test("log() with meta delegates to info", () => {
     logger.log("hello", { a: 1 });
-
-    expect(writer.write).toHaveBeenCalledTimes(1);
-    expect(writer.write.mock.calls[0][0]).toContain("INFO");
-    expect(writer.write.mock.calls[0][0]).toContain("hello");
+    expect(winstonInstance.info).toHaveBeenCalledWith("hello", { a: 1 });
   });
 
-  test("verbose logger writes log + system block", () => {
-    const logger = new Logger(true, false);
-
-    logger.log("hello", { a: 1 });
-
-    expect(writer.write).toHaveBeenCalledTimes(2);
-    expect(writer.write.mock.calls[0][0]).toContain("VERBOSE");
-    expect(writer.write.mock.calls[1][0]).toContain("SYSTEM:");
-  });
-
-  test("quiet logger does nothing", () => {
-    const logger = new Logger(false, true);
-
+  test("log() without meta uses default {}", () => {
     logger.log("hello");
-
-    expect(writer.write).not.toHaveBeenCalled();
+    expect(winstonInstance.info).toHaveBeenCalledWith("hello", {});
   });
 
-  test("verbose + quiet → quiet wins (no writes)", () => {
-    const logger = new Logger(true, true);
-
-    logger.log("hello");
-
-    expect(writer.write).not.toHaveBeenCalled();
+  test("log() with Error delegates to error", () => {
+    const err = new Error("fail");
+    logger.log("msg", err);
+    expect(winstonInstance.error).toHaveBeenCalledWith(err);
   });
 
-  test("log without args still writes", () => {
-    const logger = new Logger(false, false);
-
-    logger.log("hello");
-
-    expect(writer.write).toHaveBeenCalledTimes(1);
-    expect(writer.write.mock.calls[0][0]).toContain("hello");
+  test("error() delegates to winston.error", () => {
+    logger.error("boom", { x: 1 });
+    expect(winstonInstance.error).toHaveBeenCalledWith("boom", { x: 1 });
   });
 
-  test("logger propagates writer error", () => {
-    writer.write.mockImplementation(() => {
-      throw new Error("disk error");
-    });
+  test("warn() delegates to winston.warn", () => {
+    logger.warn("warn", { y: 2 });
+    expect(winstonInstance.warn).toHaveBeenCalledWith("warn", { y: 2 });
+  });
 
-    const logger = new Logger(false, false);
-
-    expect(() => logger.log("boom")).toThrow("disk error");
+  test("debug() delegates to winston.debug", () => {
+    logger.debug("dbg", { z: 3 });
+    expect(winstonInstance.debug).toHaveBeenCalledWith("dbg", { z: 3 });
   });
 });
